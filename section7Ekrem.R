@@ -1,13 +1,10 @@
-#section 6 Vectors
+#section 7 Mixing Objects
+y <- c(1.7, "a") ## character
+y
+class(y)
 
-x <- c(0.1, 1)
-x
+y <- c(TRUE, 2) ## numeric
+class(y)
 
-x <- vector("numeric", length = 10)
-x
-
-x <- 2:1
-x
-
-x <- c("a", "b", "c")
-x
+y <- c("a", TRUE) ## character
+class(y)
