@@ -1,0 +1,46 @@
+
+---
+title: "hw1Ekrem"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+suppressPackageStartupMessages(library(tidyverse))
+library(readr) #Reading xlsx files 
+
+library(ggplot2) # visualization 
+library(scales) # visualization 
+library(dplyr) # data manipulation
+library(knitr)
+
+setwd("Q:/Users/E_UCAR/Downloads")
+
+UNdata_Export_20171026_130851047 <- read_csv("UNdata_Export_20171026_130851047.csv")
+```
+
+## R Markdown
+
+## Summary
+
+UN homicide data summary :
+
+```{r UNdata_Export_20171026_130851047}
+summary(UNdata_Export_20171026_130851047)
+```
+
+## Plots
+
+UN homicide data plot by identity :
+
+```{r}
+
+p1 <- ggplot(data = UNdata_Export_20171026_130851047, aes(x=Year, y=Rate))
+p1 + geom_bar(stat="identity")
+
+```
+
