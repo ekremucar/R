@@ -29,7 +29,7 @@ UNdata_Export_20171026_130851047 <- read_csv("UNdata_Export_20171026_130851047.c
 
 UN homicide data summary :
 
-```{r UNdata_Export_20171026_130851047}
+```{r}
 summary(UNdata_Export_20171026_130851047)
 ```
 
