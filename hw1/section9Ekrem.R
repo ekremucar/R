@@ -17,3 +17,10 @@ m
 
 dim(m) <- c(2, 5) #assing dimension -> convert list to matrix
 m
+
+x <- 1:3
+y <- 10:12
+
+cbind(x, y)
+
+rbind(x, y)
