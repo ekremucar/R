@@ -329,8 +329,17 @@ quantile(x) #dilimler hakkýnda
 
 sort(x )[100000*0.25] #çeyreklik dilimleri elde etme ????
 
-#DÖNGÜ TANIMLAMA
+#FONKSÝYON VE DÖNGÜ TANIMLAMA
+cevre_alan <- function(r)
+{
+  cf<-2*pi*r #çevre
+  alan <- pi*r^2
+  res<-c(cf, alan)
+  names(res)<-c("çevre", "alan")
+  res
+}
 
+cevre_alan(3)
 
 
 
