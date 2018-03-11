@@ -1,350 +1,116 @@
-#ATAMA
 
-x <- 3
-x = 3
-x[4] <- 7.5
-x 
-#örnek yorum
+file1999<-file.choose()
 
-x<-1:8
-x
+pm0 <- read.table(file1999, comment.char = "#", header = FALSE, sep = "|", na.strings = "")
 
-x<-15:11
-x
+dim(pm0)
 
-y<-x+3
-y
+head(pm0[, 1:13])
 
+cnames <- readLines(file1999, 1)
 
-#VEKTÖRLER
+cnames <- strsplit(cnames, "|", fixed = TRUE)
 
-#R iki farklı uzunlukta olan vektörle işlem yaparken kısa olan vektörü uzun olan
-#vektör ile aynı boyuta erişinceye kadar otomatik olarak tekrarlar
+names(pm0) <- make.names(cnames[[1]])
 
-x<-1:8
-y<-1:4
-x
-y
-x+y  
-# 1 2 3 4 5 6 7  8 +
-# 1 2 3 4 1 2 3  4 =
-# 2 4 6 8 6 8 10 12
+head(pm0[, 1:13])
 
+x0 <- pm0$Sample.Value
+summary(x0)
 
-#Uzunlukları birbirinin katı değilse
+mean(is.na(x0))
 
-x<-1:8
-y<-1:3
-x
-y
-x+y  
-#2  4  6  5  7  9  8 10
-#Warning message:
-#  In x + y : longer object length is not a multiple of shorter object length
 
+file2012<-file.choose()
 
-#c for combine
-x <- c(1, 2, 3)
-y <- c(4, 5, 6)
-z <- c(x, y)
-z
+pm1 <- read.table(file2012, comment.char = "#",
+                  header = FALSE, sep = "|", na.strings = "", nrow = 1304290)
 
-length(z)
+names(pm1) <- make.names(cnames[[1]])
+x1 <- pm1$Sample.Value
+x1
 
-m<- c(1, 2, 3, 1, 2, 3, 3)
-unique(m)
 
-#count of items
-table(m)
+boxplot(log2(x0), log2(x1))
 
-#reverse 
-rev(m)
+summary(x0)
 
-#repeat
-x<-rep(1, 3)
-x
-y<-c(1, 2)
-rep(y, 2)
+summary(x1)
 
-#belli aralikta belli uzunlukta değerler vektörü oluşturma işi
-x<-seq(2,3, length.out = 21)
-x
+negative <- x1 < 0
 
-#belli aralikta belli aralikla değerler vektörü oluşturma işi
-x<-seq(2,3, by = 0.5)
-x
+mean(negative, na.rm = T)
 
+dates <- pm1$Date
+dates <- as.Date(as.character(dates), "%Y%m%d")
 
-#MANTIKSAL
-x<-10:20
-x
-x<17
-x<=17
-x>14
-x>=14
-x==16
-x!=16
-(x<=16) & (x>=12)
-(x<11) | (x>=18)
+missing.months <- month.name[as.POSIXlt(dates)$mon + 1]
+tab <- table(factor(missing.months, levels = month.name))
+round(100 * tab / sum(tab))
 
-ind = which(x<17)
-ind
 
-ind2 = which(x == 16)
-ind2
 
-v1<-90:120
-v2<-10:100
-ind3=which(v1 %in% v2)
-ind3
+site0 <- unique(subset(pm0, State.Code == 36, c(County.Code, Site.ID)))
+site1 <- unique(subset(pm1, State.Code == 36, c(County.Code, Site.ID)))
 
-x<-1:20
-y<-(x>=8)*x
-y
+site0 <- paste(site0[,1], site0[,2], sep = ".")
+site1 <- paste(site1[,1], site1[,2], sep = ".")
+str(site0)
+str(site1)
+both <- intersect(site0, site1)
+print(both)
 
 
-#SİPARİŞ
-siparisMiktari <- 30:50
-birimMaliyet<-7 * siparisMiktari* (siparisMiktari<40)+6.5*siparisMiktari*(siparisMiktari>=40)
-birimMaliyet
+pm0$county.site <- with(pm0, paste(County.Code, Site.ID, sep = "."))
+pm1$county.site <- with(pm1, paste(County.Code, Site.ID, sep = "."))
+cnt0 <- subset(pm0, State.Code == 36 & county.site %in% both)
+cnt1 <- subset(pm1, State.Code == 36 & county.site %in% both)
 
-sabitMaliyet<-50*(siparisMiktari<=45)+15*(siparisMiktari>45)
-sabitMaliyet
+sapply(split(cnt0, cnt0$county.site), nrow)
+sapply(split(cnt1, cnt1$county.site), nrow)
 
-toplam<-sabitMaliyet + birimMaliyet 
-toplam
 
-siparisMiktari[toplam<=318]
-toplam[toplam<=318]
+both.county <- 63
+both.id <- 2008
 
 
-#indeksleme ve vektör elemanlarına erişim
-x<- seq(5, 8, by = 0.3)
-x
-length(x)
+pm1sub <- subset(pm1, State.Code == 36 & County.Code == both.county & Site.ID == both.id)
+pm0sub <- subset(pm0, State.Code == 36 & County.Code == both.county & Site.ID == both.id)
 
-y1 <- x[3:7]
-y1
 
-y2 <- x [2*(1:5)] #indexleri 2 4 6 8 10 olanlar
-y2
+dates1 <- as.Date(as.character(pm1sub$Date), "%Y%m%d")
+x1sub <- pm1sub$Sample.Value
 
+dates0 <- as.Date(as.character(pm0sub$Date), "%Y%m%d")
+x0sub <- pm0sub$Sample.Value
 
-y3 <- x[-1] #ilk elemanı vektörden çıkar
-y3
+rng <- range(x0sub, x1sub, na.rm = T)
+par(mfrow = c(1, 2), mar = c(4, 5, 2, 1))
 
-y4 <- x[-length(x)] #son elemanı çıkar
-y4
 
-y5 <- x[-seq(1, 11, 3)]
-y5
+plot(dates0, x0sub, pch = 20, ylim = rng, xlab = "", ylab = expression(PM[2.5] * " (" * mu * g/m^3 * ")"))
 
-y6 <- x[c(1, 3, 7)]
-y6
 
-y7 <- x[seq(1, 11, 3)]
-y7
+abline(h = median(x0sub, na.rm = T))
+plot(dates1, x1sub, pch = 20, ylim = rng, xlab = "", ylab = expression(PM[2.5] * " (" *mu * g/m^3 * ")"))
 
 
-#MATRİSLER
-x<-1:5
-y <- t(x) #transpose
-y
-t(y)
+abline(h = median(x1sub, na.rm = T))
 
-vec <- 1:12
-vec
-x <- matrix(vec, nrow=3, ncol=4)
-x
-t(x)
 
-vec <- 1:12
-x <- matrix(vec, nrow=3, ncol=4, byrow = T)
-x
+mn0 <- with(pm0, tapply(Sample.Value, State.Code, mean, na.rm = TRUE))
+mn1 <- with(pm1, tapply(Sample.Value, State.Code, mean, na.rm = TRUE))
 
-x <- matrix(c(1, 2, -1, 1, 2 ,1, 2, -2, -1), nrow = 3 , ncol = 3)
-x
 
-xinv <- solve(x)
-xinv
+d0 <- data.frame(state = names(mn0), mean = mn0)
+d1 <- data.frame(state = names(mn1), mean = mn1)
+mrg <- merge(d0, d1, by = "state")
+head(mrg)
 
-x <- matrix(0, nrow = 3, ncol = 4)
-diag(x) <- 1
-x
+par(mfrow = c(1, 1))
+rng <- range(mrg[,2], mrg[,3])
+with(mrg, plot(rep(1, 52), mrg[, 2], xlim = c(.5, 2.5), ylim = rng, xaxt = "n", xlab = "", ylab = "State-wide Mean PM"))
 
-
-x<-matrix(0, ncol = 5, nrow =4)
-ncol(x)
-nrow(x)
-length(x)
-dim(x)
-
-
-
-#ARİTMETİK
-x<-2 * (1:15)
-x
-y<-1:5
-y
-
-
-x+y
-x/y
-x*y
-x-y
-x^y
-x%%3
-
-
-
-y<-3:7
-x%%y #x mod y
-
-x%/%y # bölme işleminin tam sayı kısmı ?????
-
-
-x<-c(3,1,6)
-max(x)
-min(x)
-prod(x)
-sum(x)
-prod(x)
-
-
-
-x<-1:10
-y<-10:1
-z<-c(3,2,1, 6,5,4,10,9,8,7)
-
-
-pmax(x,y) #aynı sırada bulunanların en büyüğü
-
-
-a<-pmin(x,y,z) #en küçüğü
-
-#sort
-veri <- c(1, 5, 7, 3, 2, 3)
-sort(veri)
-order(veri) #indeksleri dönüyor
-
-veri[order(veri)]
-
-order(veri, decreasing = T)
-
-
-rank(veri) #hücrenin sıralamada kaçıncı sırada olduğunu veriyor
-
-veri <- c(1, 1, 1, 2, 3, 4)
-rank(veri, ties.method = "first")
-rank(veri, ties.method = "random")
-rank(veri, ties.method = "random")
-rank(veri, ties.method = "random")
-
-rank(veri, ties.method = "max")
-rank(veri, ties.method = "min")
-rank(veri, ties.method = "average")
-
-rank(-veri) #order by yerine - (eksi işareti) kullanılıyor
-
-
-#matrix çarpım
-x<-matrix(1:6, ncol = 2, nrow =3)
-y<-matrix(1:4, ncol = 2, nrow =2)
-
-x%*%y
-y%*%x #hata
-y%*%t(x)
-
-
-
-x<-1:3
-y<-3:1
-
-x%*%y #r düzeltme yapıyor
-
-t(x)%*%t(y) #hata
-x%*%t(y)#doğrusu
-
-
-x<-c(1,2,3,5)
-cumsum(x)
-cumprod(x)
-diff(x)
-
-
-factorial(3)
-factorial(1:3)
-abs(-4)
-
-abs(c(-3:3))
-
-sqrt(4)
-
-sqrt(1:4)
-
-log(100)
-log10(100)
-log2(100)
-log(100, 5)
-log(c(10,20,30))
-
-
-exp(4.60)
-exp(log(100))
-exp(seq(-2,2, 0.4))
-
-
-gamma(5)
-gamma(5.5)
-
-x<-c(-3, -3.5, 4, 4.2)
-floor(x)
-ceiling(x)
-as.integer(x)
-
-
-
-#İSTATİSTİK
-dnorm(0.5)
-dnorm(0, 2, 1)
-dnorm(3, 3, 5)
-
-pnorm(0)
-pnorm(2)
-
-qnorm(0.5)
-qnorm(0.9772499)
-qnorm(0.9772499, 3,1)
-
-rnorm(20,2,1)
-
-
-x<-rnorm(100000,5,2) #  ortalaması 5 standart sapması 2 olan normal dağılımdan 100bin rasgele sayı
-mean(x)
-sd(x)
-var(x)
-median(x)
-summary(x)
-quantile(x) #dilimler hakkında
-
-sort(x )[100000*0.25] #çeyreklik dilimleri elde etme ????
-
-#FONKSİYON VE DÖNGÜ TANIMLAMA
-cevre_alan <- function(r)
-{
-  cf<-2*pi*r #çevre
-  alan <- pi*r^2
-  res<-c(cf, alan)
-  names(res)<-c("çevre", "alan")
-  res
-}
-
-cevre_alan(3)
-
-
-image.default("")
-
-
-
-
-
+with(mrg, points(rep(2, 52), mrg[, 3]))
+segments(rep(1, 52), mrg[, 2], rep(2, 52), mrg[, 3])
+axis(1, c(1, 2), c("1999", "2012"))
