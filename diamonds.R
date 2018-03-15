@@ -30,3 +30,19 @@ qplot(x = price, data = diamonds, binwidth=1000, color='black', fill='white') +
 by(diamonds,diamonds$cut ,summary)
 
 
+#8
+qplot(x = price, data = diamonds) + facet_wrap(~cut) #y axis zaten 'fixed'
+
+#9
+qplot(x = price, data = diamonds, y=carat) + 
+  facet_grid(~cut)
+
+
+
+
+
+
+
+
+
+
