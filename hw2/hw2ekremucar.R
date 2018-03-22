@@ -342,6 +342,7 @@ cevre_alan <- function(r)
 cevre_alan(3)
 
 
+image.default("")
 
 
 
